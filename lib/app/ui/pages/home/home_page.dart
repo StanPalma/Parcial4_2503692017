@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_parcial4/app/ui/pages/home/home_controller.dart';
+import 'package:flutter_parcial4/app/ui/pages/home/utils/map_style.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class HomePage extends StatefulWidget {
@@ -9,16 +10,43 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final _initialCameraPosition = const CameraPosition(
-    target: LatLng(13.714011, -89.215264),
-    zoom: 12,
+    target: LatLng(13.99417, -89.55972),
+    zoom: 11,
   );
-  // Para agregar Snazzy map
-  final _controller = HomeController();
 
-  final Map<MarkerId, Marker> _makers = Map();
-  _onTap(LatLng position) {
-    final markerId = MarkerId(_makers.length.toString());
-    final maker = Marker(markerId: markerId, position: position);
+  final Set<Marker> _markers = {};
+
+  void _onMapCreated(GoogleMapController controller) {
+    // mapStyle para usar Snazzy map
+    controller.setMapStyle(mapStyle);
+    setState(
+      () {
+        _markers.add(
+          Marker(
+            markerId: const MarkerId('id-1'),
+            position: const LatLng(13.989520, -89.680624),
+            infoWindow: const InfoWindow(
+              title: 'Domicilios SV',
+              snippet: 'Chalchuapa',
+            ),
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+                BitmapDescriptor.hueAzure),
+          ),
+        );
+        _markers.add(
+          Marker(
+            markerId: const MarkerId('id-2'),
+            position: const LatLng(13.903388, -89.500522),
+            infoWindow: const InfoWindow(
+              title: 'Domicilios SV',
+              snippet: 'El Congo',
+            ),
+            icon:
+                BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -29,20 +57,12 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.orange,
       ),
       body: GoogleMap(
-        onMapCreated: _controller.onMapCreated,
+        //onMapCreated: _controller.onMapCreated,
+        onMapCreated: _onMapCreated,
+        markers: _markers,
         initialCameraPosition: _initialCameraPosition,
-        myLocationButtonEnabled: true,
-        zoomControlsEnabled: true,
         mapType: MapType.normal,
-        markers: Set.of(_makers.values),
-        onTap: _onTap,
-        compassEnabled: false,
       ),
-
-      // Despues de modificar painter.dart
-      /* customPain: CustomPaint(
-          painter: Painter(),
-        ), */
     );
   }
 }
